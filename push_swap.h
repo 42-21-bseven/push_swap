@@ -17,4 +17,11 @@ typedef struct s_all
 	t_list 			*b_stack;
 	int 			len;
 }							t_all;
+
+int init_list(t_all *all, int ac, char **av);
+t_list	*ft_lstnew(int content);
+void	ft_lstadd_front(t_list **list, t_list *new);
+t_list	*ft_lstlast(t_list *lst);
+void	ft_lstadd_back(t_list **lst, t_list *new);
+
 #endif

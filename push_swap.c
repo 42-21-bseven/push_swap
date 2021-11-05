@@ -47,6 +47,23 @@ void rotate_stack(t_list **list)
 	}
 }
 
+void rev_rotate_stack(t_list **list)
+{
+	t_list *temp;
+	t_list *curr;
+
+	if (*list)
+	{
+		temp = ft_lstlast(*list);
+		curr = *list;
+		while (curr->next && curr->next->next)
+			curr = curr->next;
+		curr->next = NULL;
+		temp->next = *list;
+		*list = temp;
+	}
+}
+
 int main(int ac, char **av)
 {
 	t_all all;
@@ -72,6 +89,7 @@ int main(int ac, char **av)
 //	push_stack(&all.a_stack, &all.b_stack);
 //	push_stack(&all.a_stack, &all.b_stack);
 	rotate_stack(&all.a_stack);
+	rev_rotate_stack(&all.a_stack);
 	curr = all.a_stack;
 	printf("stack A:\t");
 	while (curr)

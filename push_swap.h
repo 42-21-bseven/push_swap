@@ -9,13 +9,19 @@ typedef struct s_list
 {
 	int 			vol;
 	struct s_list	*next;
+	int 			stage;
 }							t_list;
 
 typedef struct s_all
 {
 	t_list 			*a_stack;
 	t_list 			*b_stack;
-	int 			len;
+	int 			start_len;
+	int				current_len;
+	int 			min_vol;
+	int 			average;
+	int 			chang_len;
+	int				**mass;
 }							t_all;
 
 int init_list(t_all *all, int ac, char **av);

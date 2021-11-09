@@ -38,11 +38,11 @@ int	chk_int(const char *str)
 
 int init_list(t_all *all, int ac, char **av)
 {
-
 	int i;
 	long num;
 
 	i = 1;
+	all->start_len = ac - 1;
 	while (i < ac)
 	{
 		if (chk_int(av[i]))

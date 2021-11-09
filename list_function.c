@@ -12,6 +12,7 @@ t_list	*ft_lstnew(int content)
 	}
 	else
 		return (NULL);
+	newelement->stage = 0;
 	return (newelement);
 }
 

@@ -42,11 +42,13 @@ void rotate_stack(t_list **list)
 	{
 		temp = (*list);
 		if ((*list)->next)
+		{
 			(*list) = (*list)->next;
-		else
-			(*list) = NULL;
-		temp->next = NULL;
-		ft_lstadd_back(list, temp);
+			temp->next = NULL;
+			ft_lstadd_back(list, temp);
+		}
+//		else
+//			(*list) = NULL;
 	}
 }
 
@@ -147,6 +149,22 @@ int search_stage(t_list *steak)
 	return (i);
 }
 
+int rev_search_stage(t_list *steak)
+{
+	int i;
+
+	i = 0;
+	if (steak)
+		i = steak->stage;
+	while (steak)
+	{
+		if (steak->stage > i)
+			i = steak->stage;
+		steak = steak->next;
+	}
+	return (i);
+}
+
 void ft_average_index(t_all *all, t_list *steak, int stage)
 {
 	int i;
@@ -165,7 +183,7 @@ void ft_average_index(t_all *all, t_list *steak, int stage)
 		free(all->mass);
 }
 
-int ft_search_average(t_all *all, t_list *steak)
+int ft_search_average(t_all *all, t_list *steak, int group)
 {
 	int i;
 	int current_group;
@@ -173,7 +191,7 @@ int ft_search_average(t_all *all, t_list *steak)
 	
 	i = 0;
 	current = steak;
-	current_group = search_stage(steak);
+	current_group = group;
 	while (current)
 	{
 		if (current_group == current->stage)
@@ -195,12 +213,25 @@ int ft_search_stage_elements(t_list *steak, int average)
 	return (0);
 }
 
+int	ft_rev_search_stage_elements(t_list *steak, int average)
+{
+	while (steak)
+	{
+		if (steak->vol >= average)
+			return (1);
+		steak = steak->next;
+	}
+	return (0);
+}
+
 int	push_chang(t_all *all, int stage)
 {
-	printf("AVE => %d\tLEN => %d\t3безостаткана2 => %d\n", all->average, all->start_len, (3 / 2));
+	printf("average=> %d\tSTAGE=> %d\tCUR_LEN=> %d\n", all->average, stage, all->current_len);
 
 	while (ft_search_stage_elements(all->a_stack, all->average))
 	{
+		if (all->b_stack && all->b_stack->next && all->b_stack->vol < all->b_stack->next->vol)
+			swap_stack(&all->b_stack);
 		if (all->a_stack->vol < all->average)
 		{
 			all->a_stack->stage = stage;
@@ -219,31 +250,76 @@ int	push_chang(t_all *all, int stage)
 	return (0);
 }
 
+int rev_push_chang(t_all *all, int stage)
+{
+	while (ft_rev_search_stage_elements(all->b_stack, all->average))
+	{
+		if (all->a_stack && all->a_stack->next && all->a_stack->vol > all->a_stack->next->vol)
+			swap_stack(&all->a_stack);
+		if (all->b_stack->next && all->b_stack->vol > all->average)
+		{
+			rotate_stack(&all->b_stack);
+			all->b_stack->stage = stage;
+			push_stack(&all->a_stack, &all->b_stack);
+			rev_rotate_stack(&all->b_stack);
+		}
+		if (all->b_stack->vol >= all->average)
+		{
+			all->b_stack->stage = stage;
+			push_stack(&all->a_stack, &all->b_stack);
+		}
+		else
+			rotate_stack(&all->b_stack);
+	}
+	return (0);
+}
 
+int ft_check(t_list *steak)
+{
+	t_list *head;
+	t_list *current;
+
+	head = steak;
+	while (steak)
+	{
+		current = head;
+		while (current != steak)
+		{
+			if (current->vol > steak->vol)
+				return (1);
+			current = current->next;
+		}
+		steak = steak->next;
+	}
+	return (0);
+}
 
 void sort(t_all *all)
 {
 	int stage;
-	int flag = 0;
-	
+
 	stage = 0;	
-	while (flag != 6)
+	while (printf("ft_check => %d\n", ft_check(all->a_stack))
+			&& ft_check(all->a_stack))
 	{
-		while (current_len(all->a_stack) > 2)
+		while (printf("CURENT_LEN => %d\n", current_len(all->a_stack))
+				&& current_len(all->a_stack) > 2)
 		{
-			ft_search_average(all, all->a_stack);
+			ft_search_average(all, all->a_stack, search_stage(all->a_stack));
 			push_chang(all, stage++);
 			if (current_len(all->a_stack) < 3)
 			{
 				if(all->a_stack && all->a_stack->next && all->a_stack->vol > all->a_stack->next->vol)
 					swap_stack(&all->a_stack);
+				break;
 			}
 		}
-//		while (current_len(all->b_stack))
-//		{
-//			push_stack(&all->a_stack, &all->b_stack);
-//		}
-		flag = 6;
+		while (current_len(all->b_stack) > 1)
+		{
+			ft_search_average(all, all->b_stack, rev_search_stage(all->b_stack));
+			rev_push_chang(all, stage++);
+		}
+		push_stack(&all->a_stack, &all->b_stack);
 	}
 }
 

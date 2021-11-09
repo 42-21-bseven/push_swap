@@ -21,7 +21,7 @@ typedef struct s_all
 	int 			min_vol;
 	int 			average;
 	int 			chang_len;
-	int				**mass;
+	int				*mass;
 }							t_all;
 
 int init_list(t_all *all, int ac, char **av);

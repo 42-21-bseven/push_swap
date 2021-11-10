@@ -57,7 +57,7 @@ void rev_rotate_stack(t_list **list)
 	t_list *temp;
 	t_list *curr;
 
-	if (*list)
+	if (*list && (*list)->next)
 	{
 		temp = ft_lstlast(*list);
 		curr = *list;
@@ -69,17 +69,17 @@ void rev_rotate_stack(t_list **list)
 	}
 }
 
-void bub_sort(int **arr)
+void bub_sort(int **arr, int len)
 {
 	int i;
 	int j;
 	int n;
 
 	i = 0;
-	while (arr[i])
+	while (i < len)
 	{
 		j = 0;
-		while ((*arr)[j])
+		while (j < len)
 		{
 			if ((*arr)[i] > (*arr)[j])
 			{
@@ -177,7 +177,7 @@ void ft_average_index(t_all *all, t_list *steak, int stage)
 			all->mass[i++] = steak->vol;
 		steak = steak->next;
 	}
-	bub_sort(&all->mass);
+	bub_sort(&all->mass, all->current_len);
 	all->average = all->mass[i / 2];
 	if (all->mass)
 		free(all->mass);
@@ -320,6 +320,8 @@ void sort(t_all *all)
 			rev_push_chang(all, stage++);
 		}
 		push_stack(&all->a_stack, &all->b_stack);
+		if (all->a_stack && all->a_stack->next && all->a_stack->vol > all->a_stack->next->vol)
+			swap_stack(&all->a_stack);
 	}
 }
 
